@@ -1,30 +1,30 @@
 package config
 
 type EmailConfig struct {
-    From     string
-    To       string
-    Password string
-    SMTPHost string
-    SMTPPort int
+	From     string
+	To       string
+	Password string
+	SMTPHost string
+	SMTPPort int
 }
 
 type Config struct {
-    LichessAPIBase string
+	LichessAPIBase string
 	Users          []string
-    Email      EmailConfig
+	Email          EmailConfig
 }
 
 func LoadConfig() Config {
 	return Config{
 		LichessAPIBase: "https://lichess.org/api/games/user/",
 		// Users:          []string{"itsspriyansh"},
-        Users:          []string{"praneki_li"},
+		Users: []string{"praneki_li","itsspriyansh"},
 		Email: EmailConfig{
-            From:     "pranjaljha00@gmail.com",
-            To:       "21bcs161@iiitdmj.ac.in",
-            Password: "Pranjal@2020",
-            SMTPHost: "smtp.gmail.com",
-            SMTPPort: 587,
-        },
+			From: "pranjaljha00@gmail.com",
+			To:   "idupidu00@gmail.com",
+			Password: "zcppikkpqnnoolut",
+			SMTPHost: "smtp.gmail.com",
+			SMTPPort: 587,
+		},
 	}
 }
