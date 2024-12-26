@@ -56,9 +56,9 @@ func main() {
 func formatGameDetails(game models.Game) string {
 	// Format the game details into a string
 	return fmt.Sprintf(
+        "Are you kidding ??? what the **** are you talking about MAN ? you arE a biggest looser i ever seen in my life ! you was doing pipI in your pamperS when i was beating players much more stronger then you!"+
 		"Game Lost Notification:\n\n"+
 			"Event: %s\n"+
-			"Site: %s\n"+
 			"Date: %s\n"+
 			"White: %s\n"+
 			"Black: %s\n"+
@@ -66,7 +66,6 @@ func formatGameDetails(game models.Game) string {
 			"Termination: %s\n"+
 			"\nGame Link: %s\n",
 		game.Event,
-		game.Site,
 		game.Date,
 		game.White,
 		game.Black,
