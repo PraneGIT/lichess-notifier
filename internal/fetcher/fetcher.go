@@ -3,29 +3,33 @@ package fetcher
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
-    "github.com/notnil/chess"
+	"github.com/notnil/chess"
 
 	"github.com/PraneGIT/lichess-notifier/internal/models"
 )
 
 type Fetcher struct {
     apiBase string
-    user    string
+    User    string
 }
 
 func NewFetcher(apiBase, user string) *Fetcher {
-    return &Fetcher{apiBase: apiBase, user: user}
+    return &Fetcher{apiBase: apiBase, User: user}
 }
 
 func (f *Fetcher) FetchGames() ([]models.Game, error) {
-    url := fmt.Sprintf("%s%s?max=2", f.apiBase, f.user)
-    fmt.Println(url)
+    url := fmt.Sprintf("%s%s?max=2", f.apiBase, f.User)
+    
+    // Log the URL being requested
+    log.Printf("Fetching games for user: %s from URL: %s\n", f.User, url)
 
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
+        log.Printf("Error creating request: %v\n", err)
         return nil, err
     }
     req.Header.Set("Content-Type", "application/x-ndjson")
@@ -33,35 +37,47 @@ func (f *Fetcher) FetchGames() ([]models.Game, error) {
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
+        log.Printf("Error making request: %v\n", err)
         return nil, err
     }
     defer resp.Body.Close()
 
     body, err := io.ReadAll(resp.Body)
     if err != nil {
+        log.Printf("Error reading response body: %v\n", err)
         return nil, err
     }
+
+    // Log the number of games fetched (or if no games found)
+    log.Printf("Received response with %d bytes of data\n", len(body))
 
     return parseGames(string(body)), nil
 }
 
 func parseGames(data string) []models.Game {
 	var games []models.Game
-	pgns := strings.Split(data, "\n\n\n") //games by double newlines
+	pgns := strings.Split(data, "\n\n\n") // games by double newlines
+
+	log.Printf("Parsing %d games...\n", len(pgns))
 
 	for _, pgn := range pgns {
 		if strings.TrimSpace(pgn) == "" {
 			continue
 		}
 
-		// reader := strings.NewReader(pgn)
+		// Log the game being parsed
+		log.Println("Parsing a new game...")
+
 		game := chess.NewGame()
 		if err := game.UnmarshalText([]byte(pgn)); err != nil {
-			fmt.Println("Error parsing PGN:", err)
+			log.Printf("Error parsing PGN: %v\n", err)
 			continue
 		}
 
 		headers := extractHeaders(pgn)
+
+		// Log the parsed headers of the game
+		log.Printf("Parsed game headers: %+v\n", headers)
 
 		games = append(games, models.Game{
             Event:            headers["Event"],
@@ -82,8 +98,9 @@ func parseGames(data string) []models.Game {
             Termination:      headers["Termination"],
             Moves:            game.String(), // PGN moves as a string
         })
-        
 	}
+
+	log.Printf("Parsed a total of %d games.\n", len(games))
 	return games
 }
 
