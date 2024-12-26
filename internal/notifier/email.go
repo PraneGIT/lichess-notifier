@@ -7,7 +7,7 @@ import (
 
 type EmailNotifier struct {
     from     string
-    to       string
+    to       []string
     password string
     smtpHost string
     smtpPort int
@@ -27,7 +27,7 @@ func (e *EmailNotifier) SendEmail(subject string, body string) error {
     message := gomail.NewMessage()
     
     message.SetHeader("From", e.from)
-    message.SetHeader("To", e.to)
+    message.SetHeader("To", e.to...)
     message.SetHeader("Subject", subject)
     
     message.SetBody("text/plain", body)
